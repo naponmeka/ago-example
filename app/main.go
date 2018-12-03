@@ -6,33 +6,59 @@ import (
 	"github.com/naponmeka/ago"
 )
 
+type Todo struct {
+	Title string
+	Done  bool
+}
+
+type TodoPageData struct {
+	PageTitle string
+	Todos     []Todo
+}
+
 func main() {
 	println("WASM Go Initialized.")
 	doc := js.Global().Get("document")
 	doc.Set("title", "Ago example")
-	ul := ago.CreateElement("ul", nil, []ago.Element{
-		ago.CreateElement("li", nil, ago.CreateElementContent("Gopher")),
-		ago.CreateElement("li", nil, ago.CreateElementContent("Dog")),
-		ago.CreateElement("li", nil, ago.CreateElementContent("Cat")),
-	})
-	contentElem := ago.CreateElement("div", nil, []ago.Element{
-		ago.CreateElement(
-			"p",
-			map[string]interface{}{
-				"style": map[string]string{
-					"color":      "red",
-					"font-style": "italic",
-				},
-				"class": "my-class",
-			},
-			ago.CreateElementContent("Starting world"),
-		),
-		ul,
-		ago.CreateElement("p", nil, ago.CreateElementContent("end")),
-	})
+	gox := `
+	<div>
+		<h1>{{.PageTitle}}</h1>
+		<ul>
+			{{range .Todos}}
+				{{if .Done}}
+					<li class="done">{{.Title}}</li>
+				{{else}}
+					<li>{{.Title}}</li>
+				{{end}}
+			{{end}}
+		</ul>
+	</div>
+	`
+
+	state := TodoPageData{
+		PageTitle: "My TODO list",
+		Todos: []Todo{
+			{Title: "Task 0", Done: false},
+			{Title: "Task 1", Done: true},
+			{Title: "Task 2", Done: true},
+		},
+	}
+	agoComponent := ago.CreateComponent(gox, state)
+	state2 := TodoPageData{
+		PageTitle: "My TODO list2",
+		Todos: []Todo{
+			{Title: "Task 0", Done: false},
+			{Title: "Task 1", Done: true},
+			{Title: "Task 2", Done: true},
+		},
+	}
+	agoComponent.ChangeState(state2)
+
 	ago.Render(
-		contentElem,
+		agoComponent.VDom,
 		doc.Call("getElementById", "root"),
 	)
+
+	// element := ago.Transform(gox, state)
 
 }
