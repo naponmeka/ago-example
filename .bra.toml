@@ -1,6 +1,6 @@
 [run]
 init_cmds = [                      # Commands run in start
-  ["GOARCH=wasm", "GOOS=js", "go", "build", "-o", "main.wasm", "./app/main.go"],
+  ["bash", "-c", "GOARCH=wasm GOOS=js go build -o main.wasm ./app/main.go"],
   ["go", "run", "server.go"]
 ]
 watch_all = true                   # Watch all sub-directories
@@ -14,7 +14,7 @@ interrupt_timout = 15              # Time to wait until force kill
 graceful_kill = false              # Wait for exit and before directly kill
 cmds = [                           # Commands to run
   ["bash", "-c", "lsof -n -i:8080 | grep LISTEN | awk '{ print $2 }' | uniq | xargs kill -9"],
-  ["GOARCH=wasm", "GOOS=js", "go", "build", "-o", "main.wasm", "./app/main.go"],
+  ["bash", "-c", "GOARCH=wasm GOOS=js go build -o main.wasm ./app/main.go"], # || GOARCH=wasm GOOS=js go build -ldflags \"-X main.MODE=err\" -o main.wasm ./err-page/main.go
   ["go", "run", "server.go"]
 ]
 
