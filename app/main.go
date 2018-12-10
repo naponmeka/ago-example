@@ -28,6 +28,7 @@ func main() {
 		Root:    "/",
 		RootDom: js.Global().Get("document").Call("getElementById", "root"),
 	}
+	agoRouter.Register()
 
 	gox := `
 	<div>
@@ -70,24 +71,25 @@ func main() {
 	time.Sleep(2 * time.Second)
 	detailComponent := ago.CreateComponent(`
 	<div>
-		<p>some details</p>
+		<p route="/details">some details</p>
 	</div>
 	`, nil)
 	detailComponent.Render(agoComponent.VDom.Dom)
 
 	agoRouter.AddRoute(ago.Route{
-		Path:      "todo",
+		Path:      "/todo",
 		Component: agoComponent,
 	})
 	agoRouter.AddRoute(ago.Route{
-		Path:      "details",
+		Path:      "/details",
 		Component: detailComponent,
 	})
 
 	time.Sleep(2 * time.Second)
-	agoRouter.Navigate("xxx")
+	agoRouter.Navigate("/xxx")
 	time.Sleep(2 * time.Second)
-	agoRouter.Navigate("todo")
+	agoRouter.Navigate("/todo")
+	select {}
 
 	// state3 := TodoPageData{
 	// 	PageTitle: "My TODO list3",
